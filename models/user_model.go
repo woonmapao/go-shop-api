@@ -1,4 +1,4 @@
-package mode
+package modes
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type UserDetail struct {
 	gorm.Model
 	Name     string
 	Email    *string
