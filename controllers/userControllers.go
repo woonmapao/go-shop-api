@@ -109,4 +109,15 @@ func UpdateUser(c *gin.Context) {
 
 func DeleteUser(c *gin.Context) {
 
+	// Get the id off url
+	id := c.Param("id")
+
+	// Delete the user
+	initializer.DB.Delete(&models.UserDetail{}, id)
+
+	// Respond
+	c.JSON(200, gin.H{
+		"delete:": "completed",
+	})
+
 }
