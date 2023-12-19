@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/woonmapao/user-management/initializer"
 	"github.com/woonmapao/user-management/models"
-	_ "github.com/woonmapao/user-management/models"
 )
 
 func init() {
