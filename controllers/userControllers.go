@@ -75,6 +75,36 @@ func GetAllUsers(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 
+	// Get ID off param
+	id := c.Param("id")
+
+	// Get data of request body
+	var body struct {
+		Name     string
+		Email    *string
+		Age      uint8
+		Birthday *time.Time
+	}
+
+	c.Bind(&body)
+
+	// Get the users to update from db
+	var user models.UserDetail
+	initializer.DB.First(&user, id)
+
+	// Update it
+	initializer.DB.Model(&user).Updates(models.UserDetail{
+		Name:     body.Name,
+		Email:    body.Email,
+		Age:      body.Age,
+		Birthday: body.Birthday,
+	})
+
+	// Respond the updated post
+	c.JSON(200, gin.H{
+		"updated user:": user,
+	})
+
 }
 
 func DeleteUser(c *gin.Context) {
