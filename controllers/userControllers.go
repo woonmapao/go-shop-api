@@ -63,6 +63,14 @@ func GetUserByID(c *gin.Context) {
 
 func GetAllUsers(c *gin.Context) {
 
+	//Get all user
+	var users []models.UserDetail
+	initializer.DB.Find(&users)
+
+	// Respond the finds
+	c.JSON(200, gin.H{
+		"users:": users,
+	})
 }
 
 func UpdateUser(c *gin.Context) {
