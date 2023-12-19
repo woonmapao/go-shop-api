@@ -46,6 +46,19 @@ func AddUser(c *gin.Context) {
 
 func GetUserByID(c *gin.Context) {
 
+	// Get id off url
+	id := c.Param("id")
+
+	// Get the user
+
+	var user models.UserDetail
+	initializer.DB.Find(&user, id)
+
+	// Respond the finds
+	c.JSON(200, gin.H{
+		"found user:": user,
+	})
+
 }
 
 func GetAllUsers(c *gin.Context) {
