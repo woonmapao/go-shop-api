@@ -8,7 +8,7 @@ import (
 	"github.com/woonmapao/user-management/models"
 )
 
-func addUser(c *gin.Context) {
+func AddUser(c *gin.Context) {
 
 	// Get data off req body
 
