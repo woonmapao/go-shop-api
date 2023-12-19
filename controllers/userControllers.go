@@ -43,3 +43,19 @@ func AddUser(c *gin.Context) {
 	})
 
 }
+
+func GetUserByID(c *gin.Context) {
+
+}
+
+func GetAllUsers(c *gin.Context) {
+
+}
+
+func UpdateUser(c *gin.Context) {
+
+}
+
+func DeleteUser(c *gin.Context) {
+
+}
