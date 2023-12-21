@@ -24,10 +24,9 @@ func AddUser(c *gin.Context) {
 	// Add user to db
 
 	user := models.UserDetail{
-		Name:     body.Name,
-		Email:    body.Email,
-		Age:      body.Age,
-		Birthday: body.Birthday,
+		Name:  body.Name,
+		Email: body.Email,
+		Age:   body.Age,
 	}
 
 	result := initializer.DB.Create(&user)
@@ -94,10 +93,9 @@ func UpdateUser(c *gin.Context) {
 
 	// Update it
 	initializer.DB.Model(&user).Updates(models.UserDetail{
-		Name:     body.Name,
-		Email:    body.Email,
-		Age:      body.Age,
-		Birthday: body.Birthday,
+		Name:  body.Name,
+		Email: body.Email,
+		Age:   body.Age,
 	})
 
 	// Respond the updated post
