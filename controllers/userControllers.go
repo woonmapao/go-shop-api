@@ -7,6 +7,7 @@ import (
 )
 
 func AddUser(c *gin.Context) {
+	// Handle the creation of a new user
 
 	// Get data off req body
 
@@ -43,6 +44,7 @@ func AddUser(c *gin.Context) {
 }
 
 func GetUserByID(c *gin.Context) {
+	// Retrieve a specific user based on their ID
 
 	// Get id off url
 	id := c.Param("id")
@@ -60,6 +62,7 @@ func GetUserByID(c *gin.Context) {
 }
 
 func GetAllUsers(c *gin.Context) {
+	// Fetch a list of all users from the database
 
 	//Get all user
 	var users []models.User
@@ -72,6 +75,7 @@ func GetAllUsers(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
+	// Handle the update of an existing user
 
 	// Get ID off param
 	id := c.Param("id")
@@ -106,6 +110,7 @@ func UpdateUser(c *gin.Context) {
 }
 
 // func DeleteUser(c *gin.Context) {
+// 	// Delete a user based on their ID
 
 // 	// Get the id off url
 // 	id := c.Param("id")
