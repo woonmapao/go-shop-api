@@ -27,8 +27,22 @@ func GetAllProducts(c *gin.Context) {
 
 func GetProductByID(c *gin.Context) {
 	// Extract product ID from the request parameters
+	id := c.Param("id")
+
 	// Query the database for the product with the specified ID
+	var product models.Product
+	err := initializer.DB.First(&product, id).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Product not found",
+		})
+		return
+	}
+
 	// Return a JSON response with the product details
+	c.JSON(http.StatusOK, gin.H{
+		"product": product,
+	})
 }
 
 func CreateProduct(c *gin.Context) {
