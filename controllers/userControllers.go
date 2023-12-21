@@ -35,7 +35,8 @@ func AddUser(c *gin.Context) {
 		PhoneNumber: body.PhoneNumber,
 	}
 
-	if err := initializer.DB.Create(&user).Error; err != nil {
+	err = initializer.DB.Create(&user).Error
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create user",
 		})
