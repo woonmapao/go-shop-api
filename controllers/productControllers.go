@@ -183,8 +183,22 @@ func UpdateProduct(c *gin.Context) {
 
 func SearchProducts(c *gin.Context) {
 	// Extract search criteria from the request parameters or query string
+	searchCriteria := c.Query("searchCriteria")
+
 	// Query the database for products that match the criteria
+	var searchResults []models.Product
+	err := initializer.DB.Where("name LIKE ?", "%"+searchCriteria+"%").Find(&searchResults).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch search results",
+		})
+		return
+	}
+
 	// Return a JSON response with the search results
+	c.JSON(http.StatusOK, gin.H{
+		"searchResults": searchResults,
+	})
 }
 
 func PurchaseProduct(c *gin.Context) {
