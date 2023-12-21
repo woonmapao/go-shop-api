@@ -45,16 +45,23 @@ func AddUser(c *gin.Context) {
 func GetUserByID(c *gin.Context) {
 	// Retrieve a specific user based on their ID
 
-	// Get id off url
+	// Get ID from URL param
 	id := c.Param("id")
 
-	// Get the user
+	// Get the user from the database
 	var user models.User
-	initializer.DB.Find(&user, id)
+	err := initializer.DB.First(&user, id).Error
+	if err != nil {
+		// Handle user not found or other errors
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "User not found",
+		})
+		return
+	}
 
-	// Respond the finds
-	c.JSON(200, gin.H{
-		"found user:": user,
+	// Respond with the found user
+	c.JSON(http.StatusOK, gin.H{
+		"user": user,
 	})
 
 }
