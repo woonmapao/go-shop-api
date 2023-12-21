@@ -116,10 +116,69 @@ func isProductNameDuplicate(name string) bool {
 
 func UpdateProduct(c *gin.Context) {
 	// Extract product ID from the request parameters
+	id := c.Param("id")
+
 	// Extract updated product data from the request body
+	var updatedProductData struct {
+		Name          string  `json:"name" binding:"required"`
+		Category      string  `json:"category" binding:"required"`
+		Price         float64 `json:"price" binding:"required,gt=0"`
+		Description   string  `json:"description"`
+		StockQuantity int     `json:"stockQuantity" binding:"required,gte=0"`
+		ReorderLevel  int     `json:"reorderLevel" binding:"required,gte=0,ltfield=StockQuantity"`
+	}
+
+	err := c.ShouldBindJSON(&updatedProductData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	// Validate the input data
+
+	// Check if the product exists
+	var existingProduct models.Product
+	err = initializer.DB.First(&existingProduct, id).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Product not found",
+		})
+		return
+	}
+
+	// Check if the updated product name is unique
+	isDuplicate := isProductNameDuplicate(updatedProductData.Name)
+	if isDuplicate {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Product with this name already exists",
+		})
+		return
+	}
+
+	// Check if stock quantity is greater than or equal to reorder level
+	if updatedProductData.StockQuantity < updatedProductData.ReorderLevel {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Stock quantity must be greater than or equal to reorder level",
+		})
+		return
+	}
+
 	// Update the product in the database
+	initializer.DB.Model(&existingProduct).Updates(models.Product{
+		Name:          updatedProductData.Name,
+		Category:      updatedProductData.Category,
+		Price:         updatedProductData.Price,
+		Description:   updatedProductData.Description,
+		StockQuantity: updatedProductData.StockQuantity,
+		ReorderLevel:  updatedProductData.ReorderLevel,
+	})
+
 	// Return a JSON response with the updated product
+	c.JSON(http.StatusOK, gin.H{
+		"updatedProduct": existingProduct,
+	})
 }
 
 func SearchProducts(c *gin.Context) {
