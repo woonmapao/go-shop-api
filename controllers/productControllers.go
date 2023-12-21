@@ -47,9 +47,71 @@ func GetProductByID(c *gin.Context) {
 
 func CreateProduct(c *gin.Context) {
 	// Extract product data from the request body
+	var body struct {
+		Name          string  `json:"name" binding:"required"`
+		Category      string  `json:"category" binding:"required"`
+		Price         float64 `json:"price" binding:"required,gt=0"`
+		Description   string  `json:"description"`
+		StockQuantity int     `json:"stockQuantity" binding:"required,gte=0"`
+		ReorderLevel  int     `json:"reorderLevel" binding:"required,gte=0,ltfield=StockQuantity"`
+	}
+
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	// Validate the input data
+
+	// Check if the product name is unique
+	isDuplicate := isProductNameDuplicate(body.Name)
+	if isDuplicate {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Product with this name already exists",
+		})
+		return
+	}
+
+	// Check if stock quantity is greater than or equal to reorder level
+	if body.StockQuantity < body.ReorderLevel {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Stock quantity must be greater than or equal to reorder level",
+		})
+		return
+	}
+
 	// Create a new product in the database
+	newProduct := models.Product{
+		Name:          body.Name,
+		Category:      body.Category,
+		Price:         body.Price,
+		Description:   body.Description,
+		StockQuantity: body.StockQuantity,
+		ReorderLevel:  body.ReorderLevel,
+	}
+
+	err = initializer.DB.Create(&newProduct).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create product",
+		})
+		return
+	}
+
 	// Return a JSON response with the newly created product
+	c.JSON(http.StatusCreated, gin.H{
+		"createdProduct": newProduct,
+	})
+}
+
+// Check if a product with the given name already exists in the database
+func isProductNameDuplicate(name string) bool {
+	var existingProduct models.Product
+	err := initializer.DB.Where("name = ?", name).First(&existingProduct).Error
+	return err == nil
 }
 
 func UpdateProduct(c *gin.Context) {
