@@ -210,6 +210,19 @@ func PurchaseProduct(c *gin.Context) {
 
 func DeleteProduct(c *gin.Context) {
 	// Extract product ID from the request parameters
+	id := c.Param("id")
+
 	// Delete the product from the database
-	// Return a JSON response indicating success or failure
+	err := initializer.DB.Delete(&models.Product{}, id).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to delete product",
+		})
+		return
+	}
+
+	// Return a JSON response indicating success
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
 }
