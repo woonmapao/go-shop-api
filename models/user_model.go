@@ -6,7 +6,8 @@ import (
 
 type UserDetail struct {
 	gorm.Model
-	Name  string
-	Email *string
-	Age   uint8
+	FirstName   string
+	LastName    string
+	Email       string
+	PhoneNumber string
 }

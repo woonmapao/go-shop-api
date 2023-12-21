@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/woonmapao/user-management/initializer"
 	"github.com/woonmapao/user-management/models"
@@ -13,10 +11,10 @@ func AddUser(c *gin.Context) {
 	// Get data off req body
 
 	var body struct {
-		Name     string
-		Email    *string
-		Age      uint8
-		Birthday *time.Time
+		FirstName   string `json:"firstName"`
+		LastName    string `json:"lastName"`
+		Email       string `json:"email"`
+		PhoneNumber string `json:"phoneNumber"`
 	}
 
 	c.Bind(&body)
@@ -24,9 +22,10 @@ func AddUser(c *gin.Context) {
 	// Add user to db
 
 	user := models.UserDetail{
-		Name:  body.Name,
-		Email: body.Email,
-		Age:   body.Age,
+		FirstName:   body.FirstName,
+		LastName:    body.LastName,
+		Email:       body.Email,
+		PhoneNumber: body.PhoneNumber,
 	}
 
 	result := initializer.DB.Create(&user)
@@ -79,10 +78,10 @@ func UpdateUser(c *gin.Context) {
 
 	// Get data of request body
 	var body struct {
-		Name     string
-		Email    *string
-		Age      uint8
-		Birthday *time.Time
+		FirstName   string `json:"firstName"`
+		LastName    string `json:"lastName"`
+		Email       string `json:"email"`
+		PhoneNumber string `json:"phoneNumber"`
 	}
 
 	c.Bind(&body)
@@ -93,9 +92,10 @@ func UpdateUser(c *gin.Context) {
 
 	// Update it
 	initializer.DB.Model(&user).Updates(models.UserDetail{
-		Name:  body.Name,
-		Email: body.Email,
-		Age:   body.Age,
+		FirstName:   body.FirstName,
+		LastName:    body.LastName,
+		Email:       body.Email,
+		PhoneNumber: body.PhoneNumber,
 	})
 
 	// Respond the updated post
