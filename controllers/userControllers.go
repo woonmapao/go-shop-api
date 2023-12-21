@@ -62,14 +62,21 @@ func GetUserByID(c *gin.Context) {
 func GetAllUsers(c *gin.Context) {
 	// Fetch a list of all users from the database
 
-	//Get all user
+	// Get all users from the database
 	var users []models.User
-	initializer.DB.Find(&users)
+	err := initializer.DB.Find(&users).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch users",
+		})
+		return
+	}
 
-	// Respond the finds
-	c.JSON(200, gin.H{
-		"users:": users,
+	// Respond with the found users
+	c.JSON(http.StatusOK, gin.H{
+		"users": users,
 	})
+
 }
 
 func UpdateUser(c *gin.Context) {
