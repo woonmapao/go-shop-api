@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/woonmapao/user-management/initializer"
 	"github.com/woonmapao/user-management/models"
@@ -10,7 +12,6 @@ func AddUser(c *gin.Context) {
 	// Handle the creation of a new user
 
 	// Get data off req body
-
 	var body struct {
 		FirstName   string `json:"firstName"`
 		LastName    string `json:"lastName"`
@@ -21,7 +22,6 @@ func AddUser(c *gin.Context) {
 	c.Bind(&body)
 
 	// Add user to db
-
 	user := models.User{
 		FirstName:   body.FirstName,
 		LastName:    body.LastName,
@@ -36,7 +36,6 @@ func AddUser(c *gin.Context) {
 	}
 
 	// Return status
-
 	c.JSON(200, gin.H{
 		"created :": user,
 	})
@@ -50,7 +49,6 @@ func GetUserByID(c *gin.Context) {
 	id := c.Param("id")
 
 	// Get the user
-
 	var user models.User
 	initializer.DB.Find(&user, id)
 
@@ -77,10 +75,10 @@ func GetAllUsers(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	// Handle the update of an existing user
 
-	// Get ID off param
+	// Get ID from URL param
 	id := c.Param("id")
 
-	// Get data of request body
+	// Get data from request body
 	var body struct {
 		FirstName   string `json:"firstName"`
 		LastName    string `json:"lastName"`
@@ -88,13 +86,25 @@ func UpdateUser(c *gin.Context) {
 		PhoneNumber string `json:"phoneNumber"`
 	}
 
-	c.Bind(&body)
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	// Get the users to update from db
+	// Check if the user with the given ID exists
 	var user models.User
-	initializer.DB.First(&user, id)
+	err = initializer.DB.First(&user, id).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "User not found",
+		})
+		return
+	}
 
-	// Update it
+	// Update user
 	initializer.DB.Model(&user).Updates(models.User{
 		FirstName:   body.FirstName,
 		LastName:    body.LastName,
@@ -102,9 +112,9 @@ func UpdateUser(c *gin.Context) {
 		PhoneNumber: body.PhoneNumber,
 	})
 
-	// Respond the updated post
-	c.JSON(200, gin.H{
-		"updated user:": user,
+	// Respond with the updated user
+	c.JSON(http.StatusOK, gin.H{
+		"updatedUser": user,
 	})
 
 }
