@@ -11,7 +11,7 @@ import (
 func AddUser(c *gin.Context) {
 	// Handle the creation of a new user
 
-	// Get data off req body
+	// Get data from the request body
 	var body struct {
 		FirstName   string `json:"firstName"`
 		LastName    string `json:"lastName"`
@@ -19,9 +19,15 @@ func AddUser(c *gin.Context) {
 		PhoneNumber string `json:"phoneNumber"`
 	}
 
-	c.Bind(&body)
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	// Add user to db
+	// Create user in the database
 	user := models.User{
 		FirstName:   body.FirstName,
 		LastName:    body.LastName,
@@ -29,15 +35,16 @@ func AddUser(c *gin.Context) {
 		PhoneNumber: body.PhoneNumber,
 	}
 
-	result := initializer.DB.Create(&user)
-	if result.Error != nil {
-		c.Status(400)
+	if err := initializer.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create user",
+		})
 		return
 	}
 
 	// Return status
-	c.JSON(200, gin.H{
-		"created :": user,
+	c.JSON(http.StatusOK, gin.H{
+		"createdUser": user,
 	})
 
 }
