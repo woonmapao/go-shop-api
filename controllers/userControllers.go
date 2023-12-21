@@ -21,7 +21,7 @@ func AddUser(c *gin.Context) {
 
 	// Add user to db
 
-	user := models.UserDetail{
+	user := models.User{
 		FirstName:   body.FirstName,
 		LastName:    body.LastName,
 		Email:       body.Email,
@@ -49,7 +49,7 @@ func GetUserByID(c *gin.Context) {
 
 	// Get the user
 
-	var user models.UserDetail
+	var user models.User
 	initializer.DB.Find(&user, id)
 
 	// Respond the finds
@@ -62,7 +62,7 @@ func GetUserByID(c *gin.Context) {
 func GetAllUsers(c *gin.Context) {
 
 	//Get all user
-	var users []models.UserDetail
+	var users []models.User
 	initializer.DB.Find(&users)
 
 	// Respond the finds
@@ -87,11 +87,11 @@ func UpdateUser(c *gin.Context) {
 	c.Bind(&body)
 
 	// Get the users to update from db
-	var user models.UserDetail
+	var user models.User
 	initializer.DB.First(&user, id)
 
 	// Update it
-	initializer.DB.Model(&user).Updates(models.UserDetail{
+	initializer.DB.Model(&user).Updates(models.User{
 		FirstName:   body.FirstName,
 		LastName:    body.LastName,
 		Email:       body.Email,
@@ -105,17 +105,17 @@ func UpdateUser(c *gin.Context) {
 
 }
 
-func DeleteUser(c *gin.Context) {
+// func DeleteUser(c *gin.Context) {
 
-	// Get the id off url
-	id := c.Param("id")
+// 	// Get the id off url
+// 	id := c.Param("id")
 
-	// Delete the user
-	initializer.DB.Delete(&models.UserDetail{}, id)
+// 	// Delete the user
+// 	initializer.DB.Delete(&models.User{}, id)
 
-	// Respond
-	c.JSON(200, gin.H{
-		"delete:": "completed",
-	})
+// 	// Respond
+// 	c.JSON(200, gin.H{
+// 		"delete:": "completed",
+// 	})
 
-}
+// }
