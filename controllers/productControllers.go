@@ -1,10 +1,28 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/woonmapao/user-management/initializer"
+	"github.com/woonmapao/user-management/models"
+)
 
 func GetAllProducts(c *gin.Context) {
 	// Retrieve products from the database
+	var products []models.Product
+	err := initializer.DB.Find(&products).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch products",
+		})
+		return
+	}
+
 	// Return a JSON response with the list of products
+	c.JSON(http.StatusOK, gin.H{
+		"products": products,
+	})
 }
 
 func GetProductByID(c *gin.Context) {
