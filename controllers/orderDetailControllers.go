@@ -80,7 +80,13 @@ func CreateOrderDetail(c *gin.Context) {
 		Subtotal:  orderDetailData.Subtotal,
 	}
 
-	initializer.DB.Create(&orderDetail)
+	err = initializer.DB.Create(&orderDetail).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create order details",
+		})
+		return
+	}
 
 	// Return a JSON response with the newly created order detail
 	c.JSON(http.StatusCreated, gin.H{
