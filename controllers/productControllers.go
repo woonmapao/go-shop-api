@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/woonmapao/user-management/initializer"
 	"github.com/woonmapao/user-management/models"
+	"github.com/woonmapao/user-management/validators"
 )
 
 func GetAllProducts(c *gin.Context) {
@@ -67,7 +68,7 @@ func CreateProduct(c *gin.Context) {
 	// Validate the input data
 
 	// Check if the product name is unique
-	isDuplicate := isProductNameDuplicate(body.Name)
+	isDuplicate := validators.IsProductNameDuplicate(body.Name)
 	if isDuplicate {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Product with this name already exists",
@@ -107,13 +108,6 @@ func CreateProduct(c *gin.Context) {
 	})
 }
 
-// Check if a product with the given name already exists in the database
-func isProductNameDuplicate(name string) bool {
-	var existingProduct models.Product
-	err := initializer.DB.Where("name = ?", name).First(&existingProduct).Error
-	return err == nil
-}
-
 func UpdateProduct(c *gin.Context) {
 	// Extract product ID from the request parameters
 	id := c.Param("id")
@@ -149,7 +143,7 @@ func UpdateProduct(c *gin.Context) {
 	}
 
 	// Check if the updated product name is unique
-	isDuplicate := isProductNameDuplicate(updatedProductData.Name)
+	isDuplicate := validators.IsProductNameDuplicate(updatedProductData.Name)
 	if isDuplicate {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Product with this name already exists",

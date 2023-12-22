@@ -18,3 +18,10 @@ func hasSufficientStock(productID, quantity int) bool {
 	result := initializer.DB.First(&product, productID)
 	return result.RowsAffected > 0 && product.StockQuantity >= quantity
 }
+
+// Check if a product with the given name already exists in the database
+func IsProductNameDuplicate(name string) bool {
+	var existingProduct models.Product
+	err := initializer.DB.Where("name = ?", name).First(&existingProduct).Error
+	return err == nil
+}
