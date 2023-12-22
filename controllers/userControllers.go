@@ -74,8 +74,8 @@ func GetUserByID(c *gin.Context) {
 
 }
 
+// Fetch a list of all users from the database
 func GetAllUsers(c *gin.Context) {
-	// Fetch a list of all users from the database
 
 	// Get all users from the database
 	var users []models.User
