@@ -6,7 +6,7 @@ import (
 )
 
 // Update stock in the database
-func updateStock(productID, quantity int) error {
+func UpdateStock(productID, quantity int) error {
 	var product models.Product
 	result := initializer.DB.First(&product, productID)
 	if result.Error != nil {

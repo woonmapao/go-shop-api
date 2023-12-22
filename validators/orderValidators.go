@@ -11,3 +11,11 @@ func orderExists(orderID int) bool {
 	result := initializer.DB.First(&order, orderID)
 	return result.RowsAffected > 0
 }
+
+// Validate order data
+func ValidateOrderData(orderData models.Order) error {
+
+	// Still out of idea how to validate
+
+	return nil
+}

@@ -11,11 +11,10 @@ import (
 )
 
 func PurchaseProduct(c *gin.Context) {
-	// Extract user and product information from the request
+	// Extract user and product information
 	var purchaseData struct {
-		UserID    int `json:"userId" binding:"required"`
-		ProductID int `json:"productId" binding:"required"`
-		Quantity  int `json:"quantity" binding:"required,gte=1"`
+		UserID   int                      `json:"userId"`
+		Products []models.ProductPurchase `json:"products"`
 	}
 
 	err := c.ShouldBindJSON(&purchaseData)
@@ -26,18 +25,8 @@ func PurchaseProduct(c *gin.Context) {
 		return
 	}
 
-	purchase := struct {
-		UserID    int
-		ProductID int
-		Quantity  int
-	}{
-		UserID:    purchaseData.UserID,
-		ProductID: purchaseData.ProductID,
-		Quantity:  purchaseData.Quantity,
-	}
-
 	// Validate input data
-	err = validators.ValidatePurchaseData(purchase)
+	err = validators.ValidatePurchaseData(purchaseData.UserID, purchaseData.Products)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -45,71 +34,78 @@ func PurchaseProduct(c *gin.Context) {
 		return
 	}
 
-	// Handle the purchase (update stock, create order)
-	err = updateStockAndCreateOrder(purchase)
+	// Update stock and create order details
+	var orderDetails []models.OrderDetail
+	var totalAmount float64
+
+	for _, product := range purchaseData.Products {
+		// Update stock
+		err := UpdateStock(product.ProductID, product.Quantity)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to update stock",
+			})
+			return
+		}
+
+		// Create order detail
+		orderDetail := models.OrderDetail{
+			ProductID: product.ProductID,
+			Quantity:  product.Quantity,
+			Subtotal:  calculateSubtotal(product.ProductID, product.Quantity),
+		}
+
+		orderDetails = append(orderDetails, orderDetail)
+		totalAmount += orderDetail.Subtotal
+	}
+
+	// Create order
+	order := models.Order{
+		UserID:      purchaseData.UserID,
+		OrderDate:   time.Now(),
+		TotalAmount: totalAmount,
+		Status:      "Pending", // Set initial status as "Pending"
+	}
+
+	err = initializer.DB.Create(&order).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to process the purchase",
+			"error": "Failed to create order",
 		})
 		return
 	}
 
-	// Return a JSON response indicating the success of the purchase
+	// Link order details to the created order
+	for _, orderDetail := range orderDetails {
+		orderDetail.OrderID = int(order.ID)
+		err = initializer.DB.Create(&orderDetail).Error
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to create order detail",
+			})
+			return
+		}
+	}
+
+	// Return response
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
+		"message":      "Purchase successful",
+		"orderID":      order.ID,
+		"totalAmount":  totalAmount,
+		"orderDetails": orderDetails,
 	})
 }
 
-// Update stock and create an order in the database
-func updateStockAndCreateOrder(data struct{ UserID, ProductID, Quantity int }) error {
-
-	// Update stock
-	err := updateStock(data.ProductID, data.Quantity)
-	if err != nil {
-		return err
-	}
-
-	// Create order detail and order records
-	err = createOrderAndDetail(data)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Create order and order detail records in the database
-func createOrderAndDetail(data struct{ UserID, ProductID, Quantity int }) error {
-
-	subtotal := calculateSubtotal(data.ProductID, data.Quantity)
-
-	// Create order
-	order := models.Order{
-		UserID:      data.UserID,
-		OrderDate:   time.Now(),
-		TotalAmount: subtotal,
-		Status:      "Pending", // or any initial status
-	}
-	initializer.DB.Create(&order)
-
-	// Create order detail
-	orderDetail := models.OrderDetail{
-		OrderID:   int(order.ID),
-		ProductID: data.ProductID,
-		Quantity:  data.Quantity,
-		Subtotal:  subtotal,
-	}
-	initializer.DB.Create(&orderDetail)
-
-	return nil
-}
-
+// Function to calculate subtotal
 func calculateSubtotal(productID, quantity int) float64 {
+	// Fetch product price from the database
 	var product models.Product
-	result := initializer.DB.First(&product, productID)
-	if result.Error != nil {
-		return 0
+	err := initializer.DB.First(&product, productID).Error
+	if err != nil {
+		return 0.0
 	}
 
-	return float64(quantity) * product.Price
+	// Calculate subtotal based on product price and quantity
+	subtotal := float64(quantity) * product.Price
+	return subtotal
 }

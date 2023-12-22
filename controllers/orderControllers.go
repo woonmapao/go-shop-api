@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/woonmapao/user-management/initializer"
 	"github.com/woonmapao/user-management/models"
+	"github.com/woonmapao/user-management/validators"
 )
 
 func GetAllOrders(c *gin.Context) {
@@ -48,12 +49,38 @@ func GetOrderByID(c *gin.Context) {
 }
 
 func CreateOrder(c *gin.Context) {
-	// Handle the creation of a new order
-
 	// Extract order data from the request body
+	var orderData models.Order
+	err := c.ShouldBindJSON(&orderData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	// Validate the input data
+	err = validators.ValidateOrderData(orderData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	// Create a new order in the database
+	err = initializer.DB.Create(&orderData).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create order",
+		})
+		return
+	}
+
 	// Return a JSON response with the newly created order
+	c.JSON(http.StatusCreated, gin.H{
+		"order": orderData,
+	})
 }
 
 func UpdateOrder(c *gin.Context) {
