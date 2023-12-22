@@ -1,12 +1,26 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/woonmapao/user-management/initializer"
+	"github.com/woonmapao/user-management/models"
+)
 
 func GetAllOrderDetails(c *gin.Context) {
-	// Fetch a list of all order details from the database
-
 	// Retrieve order details from the database
+	var orderDetails []models.OrderDetail
+	err := initializer.DB.Find(&orderDetails).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch order details",
+		})
+		return
+	}
+
 	// Return a JSON response with the list of order details
+	c.JSON(http.StatusOK, gin.H{"orderDetails": orderDetails})
 }
 
 func GetOrderDetailByID(c *gin.Context) {
