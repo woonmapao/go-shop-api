@@ -126,12 +126,25 @@ func UpdateOrder(c *gin.Context) {
 	})
 }
 
+// DeleteOrder deletes an order based on its ID
 func DeleteOrder(c *gin.Context) {
-	// Delete an order based on its ID
-
 	// Extract order ID from the request parameters
+	orderID := c.Param("id")
+
 	// Delete the order from the database
-	// Return a JSON response indicating success or failure
+	err := initializer.DB.Delete(&models.Order{}, orderID).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to delete order",
+		})
+		return
+	}
+
+	// Return a JSON response indicating success
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Order deleted successfully",
+	})
 }
 
 func GetUserOrders(c *gin.Context) {
