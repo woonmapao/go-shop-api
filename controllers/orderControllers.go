@@ -83,14 +83,47 @@ func CreateOrder(c *gin.Context) {
 	})
 }
 
+// UpdateOrder handles the update of an existing order
 func UpdateOrder(c *gin.Context) {
-	// Handle the update of an existing order
-
 	// Extract order ID from the request parameters
+	orderID := c.Param("id")
+
 	// Extract updated order data from the request body
+	var updatedOrderData models.Order
+	err := c.ShouldBindJSON(&updatedOrderData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	// Validate the input data
+	err = validators.ValidateOrderData(updatedOrderData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Get the existing order from the database
+	var existingOrder models.Order
+	err = initializer.DB.First(&existingOrder, orderID).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Order not found",
+		})
+		return
+	}
+
 	// Update the order in the database
+	initializer.DB.Model(&existingOrder).Updates(updatedOrderData)
+
 	// Return a JSON response with the updated order
+	c.JSON(http.StatusOK, gin.H{
+		"updated_order": existingOrder,
+	})
 }
 
 func DeleteOrder(c *gin.Context) {
