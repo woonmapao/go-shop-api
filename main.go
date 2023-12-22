@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/woonmapao/user-management/initializer"
-	"github.com/woonmapao/user-management/routes"
+	"github.com/woonmapao/go-shop-api/initializer"
+	"github.com/woonmapao/go-shop-api/routes"
 )
 
 func init() {

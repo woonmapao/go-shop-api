@@ -3,7 +3,7 @@ package validators
 import (
 	"fmt"
 
-	"github.com/woonmapao/user-management/models"
+	"github.com/woonmapao/go-shop-api/models"
 )
 
 // Validate order detail data

@@ -1,4 +1,4 @@
-module github.com/woonmapao/user-management
+module github.com/woonmapao/go-shop-api
 
 go 1.21.5
 

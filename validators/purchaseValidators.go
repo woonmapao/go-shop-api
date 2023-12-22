@@ -3,7 +3,7 @@ package validators
 import (
 	"errors"
 
-	"github.com/woonmapao/user-management/models"
+	"github.com/woonmapao/go-shop-api/models"
 )
 
 // ValidatePurchaseData validates the provided purchase data

@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/woonmapao/user-management/initializer"
-	"github.com/woonmapao/user-management/models"
+	"github.com/woonmapao/go-shop-api/initializer"
+	"github.com/woonmapao/go-shop-api/models"
 )
 
 func init() {

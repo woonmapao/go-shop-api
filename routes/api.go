@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/woonmapao/user-management/controllers"
-	"github.com/woonmapao/user-management/services"
+	"github.com/woonmapao/go-shop-api/controllers"
+	"github.com/woonmapao/go-shop-api/services"
 )
 
 // SetupRouter configures and returns the router with all API routes

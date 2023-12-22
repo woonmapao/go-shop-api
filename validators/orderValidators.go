@@ -1,8 +1,8 @@
 package validators
 
 import (
-	"github.com/woonmapao/user-management/initializer"
-	"github.com/woonmapao/user-management/models"
+	"github.com/woonmapao/go-shop-api/initializer"
+	"github.com/woonmapao/go-shop-api/models"
 )
 
 // Check if an order with the given ID exists in the database

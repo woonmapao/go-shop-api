@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/woonmapao/user-management/initializer"
-	"github.com/woonmapao/user-management/models"
-	"github.com/woonmapao/user-management/validators"
+	"github.com/woonmapao/go-shop-api/initializer"
+	"github.com/woonmapao/go-shop-api/models"
+	"github.com/woonmapao/go-shop-api/validators"
 )
 
 func GetAllOrderDetails(c *gin.Context) {
