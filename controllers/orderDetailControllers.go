@@ -95,13 +95,44 @@ func CreateOrderDetail(c *gin.Context) {
 }
 
 func UpdateOrderDetail(c *gin.Context) {
-	// Handle the update of an existing order detail
-
 	// Extract order detail ID from the request parameters
+	orderDetailID := c.Param("id")
+
 	// Extract updated order detail data from the request body
+	var updatedData models.OrderDetail
+	err := c.ShouldBindJSON(&updatedData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error()},
+		)
+		return
+	}
+
 	// Validate the input data
+	err = validators.ValidateUpdatedOrderDetailData(updatedData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	// Update the order detail in the database
+	var existingOrderDetail models.OrderDetail
+	err = initializer.DB.First(&existingOrderDetail, orderDetailID).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Order detail not found",
+		})
+		return
+	}
+
+	initializer.DB.Model(&existingOrderDetail).Updates(updatedData)
+
 	// Return a JSON response with the updated order detail
+	c.JSON(http.StatusOK, gin.H{
+		"updatedOrderDetail": existingOrderDetail,
+	})
 }
 
 func DeleteOrderDetail(c *gin.Context) {

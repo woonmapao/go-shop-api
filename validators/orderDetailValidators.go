@@ -1,6 +1,10 @@
 package validators
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/woonmapao/user-management/models"
+)
 
 // Validate order detail data
 func ValidateOrderDetailData(data struct {
@@ -22,6 +26,20 @@ func ValidateOrderDetailData(data struct {
 	// Check if the product has sufficient stock
 	if !hasSufficientStock(data.ProductID, data.Quantity) {
 		return fmt.Errorf("insufficient stock for product with ID %d", data.ProductID)
+	}
+
+	return nil
+}
+
+// Validate updated order detail data
+func ValidateUpdatedOrderDetailData(data models.OrderDetail) error {
+	// Add your validation logic here
+	// Example: Check if the updated order detail data is valid before updating
+	// Return an error if validation fails
+
+	// Replace the example logic with your actual validation checks
+	if data.Quantity <= 0 {
+		return fmt.Errorf("Quantity must be greater than zero")
 	}
 
 	return nil
