@@ -26,9 +26,30 @@ func SearchProducts(c *gin.Context) {
 	// Extract search criteria from the request parameters or query string
 	searchCriteria := c.Query("searchCriteria")
 
-	// Query the database for products that match the criteria
+	// Extract filter parameters
+	priceMin := c.Query("priceMin")
+	priceMax := c.Query("priceMax")
+	category := c.Query("category")
+
+	// Start building the database query
+	query := initializer.DB.Where("name LIKE ?", "%"+searchCriteria+"%")
+
+	// Add filters to the query if provided
+	if priceMin != "" {
+		query = query.Where("price >= ?", priceMin)
+	}
+
+	if priceMax != "" {
+		query = query.Where("price <= ?", priceMax)
+	}
+
+	if category != "" {
+		query = query.Where("category = ?", category)
+	}
+
+	// Execute the database query
 	var searchResults []models.Product
-	err := initializer.DB.Where("name LIKE ?", "%"+searchCriteria+"%").Find(&searchResults).Error
+	err := query.Find(&searchResults).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to fetch search results",
