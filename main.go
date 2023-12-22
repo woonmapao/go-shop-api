@@ -1,9 +1,8 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/woonmapao/user-management/controllers"
 	"github.com/woonmapao/user-management/initializer"
+	"github.com/woonmapao/user-management/routes"
 )
 
 func init() {
@@ -12,12 +11,6 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
-
-	r.GET("/user", controllers.GetAllUsers)
-	r.GET("/user/:id", controllers.GetUserByID)
-	r.POST("/addUser", controllers.AddUser)
-	r.PUT("/user/update/:id", controllers.UpdateUser)
-
+	r := routes.SetupRouter()
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
