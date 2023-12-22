@@ -11,3 +11,8 @@ type Product struct {
 	StockQuantity int     `json:"stockQuantity"`
 	ReorderLevel  int     `json:"reorderLevel"`
 }
+
+type ProductPurchase struct {
+	ProductID int `json:"productId"`
+	Quantity  int `json:"quantity"`
+}
