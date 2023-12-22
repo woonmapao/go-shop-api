@@ -147,14 +147,6 @@ func DeleteOrder(c *gin.Context) {
 	})
 }
 
-func GetUserOrders(c *gin.Context) {
-	// Fetch all orders associated with a specific user
-
-	// Extract user ID from the request parameters
-	// Query the database for orders associated with the user
-	// Return a JSON response with the user's orders
-}
-
 func GetOrderDetails(c *gin.Context) {
 	// Fetch all details (products) associated with a specific order
 

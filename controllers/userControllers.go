@@ -141,6 +141,26 @@ func UpdateUser(c *gin.Context) {
 
 }
 
+// GetUserOrders fetches all orders associated with a specific user
+func GetUserOrders(c *gin.Context) {
+	// Extract user ID from the request parameters
+	userID := c.Param("id")
+
+	// Query the database for orders associated with the user
+	var userOrders []models.Order
+	if err := initializer.DB.Where("user_id = ?", userID).Find(&userOrders).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch user orders",
+		})
+		return
+	}
+
+	// Return a JSON response with the user's orders
+	c.JSON(http.StatusOK, gin.H{
+		"user_orders": userOrders,
+	})
+}
+
 // func DeleteUser(c *gin.Context) {
 // 	// Delete a user based on their ID
 
