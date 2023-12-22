@@ -161,18 +161,22 @@ func GetUserOrders(c *gin.Context) {
 	})
 }
 
-// func DeleteUser(c *gin.Context) {
-// 	// Delete a user based on their ID
+// DeleteUser deletes a user based on their ID
+func DeleteUser(c *gin.Context) {
+	// Get the ID off the URL
+	id := c.Param("id")
 
-// 	// Get the id off url
-// 	id := c.Param("id")
+	// Delete the user
+	err := initializer.DB.Delete(&models.User{}, id).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to delete user",
+		})
+		return
+	}
 
-// 	// Delete the user
-// 	initializer.DB.Delete(&models.User{}, id)
-
-// 	// Respond
-// 	c.JSON(200, gin.H{
-// 		"delete:": "completed",
-// 	})
-
-// }
+	// Respond
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User deleted successfully",
+	})
+}
