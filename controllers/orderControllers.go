@@ -147,10 +147,23 @@ func DeleteOrder(c *gin.Context) {
 	})
 }
 
+// GetOrderDetails fetches all details (products) associated with a specific order
 func GetOrderDetails(c *gin.Context) {
-	// Fetch all details (products) associated with a specific order
-
 	// Extract order ID from the request parameters
+	orderID := c.Param("id")
+
 	// Query the database for details (products) associated with the order
+	var orderDetails []models.OrderDetail
+	err := initializer.DB.Where("order_id = ?", orderID).Find(&orderDetails).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch order details",
+		})
+		return
+	}
+
 	// Return a JSON response with the order details
+	c.JSON(http.StatusOK, gin.H{
+		"order_details": orderDetails,
+	})
 }
