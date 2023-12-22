@@ -28,11 +28,23 @@ func GetAllOrders(c *gin.Context) {
 }
 
 func GetOrderByID(c *gin.Context) {
-	// Retrieve a specific order based on its ID
-
 	// Extract order ID from the request parameters
+	orderID := c.Param("id")
+
 	// Query the database for the order with the specified ID
+	var order models.Order
+	err := initializer.DB.First(&order, orderID).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Order not found",
+		})
+		return
+	}
+
 	// Return a JSON response with the order details
+	c.JSON(http.StatusOK, gin.H{
+		"order": order,
+	})
 }
 
 func CreateOrder(c *gin.Context) {
